@@ -17,6 +17,7 @@ module csr_regfile
   import ariane_pkg::*;
 #(
     parameter config_pkg::cva6_cfg_t CVA6Cfg            = config_pkg::cva6_cfg_empty,
+    parameter int unsigned           NrPMPEntries       = CVA6Cfg.NrPMPEntries,
     parameter type                   exception_t        = logic,
     parameter type                   jvt_t              = logic,
     parameter type                   irq_ctrl_t         = logic,
@@ -177,9 +178,9 @@ module csr_regfile
     // TO_BE_COMPLETED - PERF_COUNTERS
     output logic perf_we_o,
     // PMP configuration containing pmpcfg for max 64 PMPs - ACC_DISPATCHER
-    output riscv::pmpcfg_t [avoid_neg(CVA6Cfg.NrPMPEntries-1):0] pmpcfg_o,
+    output riscv::pmpcfg_t [avoid_neg(NrPMPEntries-1):0] pmpcfg_o,
     // PMP addresses - ACC_DISPATCHER
-    output logic [avoid_neg(CVA6Cfg.NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_o,
+    output logic [avoid_neg(NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_o,
     // TO_BE_COMPLETED - PERF_COUNTERS
     output logic [31:0] mcountinhibit_o,
     // RVFI
@@ -336,8 +337,8 @@ module csr_regfile
   | (CVA6Cfg.XLEN'(CVA6Cfg.NSX) << 23)  // X - Non-standard extensions present
   | ((CVA6Cfg.XLEN == 64 ? 2 : 1) << CVA6Cfg.XLEN - 2);  // MXL
 
-  assign pmpcfg_o  = pmpcfg_q[(CVA6Cfg.NrPMPEntries>0?CVA6Cfg.NrPMPEntries-1 : 0):0];
-  assign pmpaddr_o = pmpaddr_q[(CVA6Cfg.NrPMPEntries>0?CVA6Cfg.NrPMPEntries-1 : 0):0];
+  assign pmpcfg_o  = pmpcfg_q[(NrPMPEntries > 0 ? NrPMPEntries-1 : 0):0];
+  assign pmpaddr_o = pmpaddr_q[(NrPMPEntries > 0 ? NrPMPEntries-1 : 0):0];
 
   riscv::fcsr_t fcsr_q, fcsr_d;
   jvt_t jvt_q, jvt_d;
@@ -1973,7 +1974,7 @@ module csr_regfile
     end
 
     // reserve PMPCFG bits 5 and 6 (hardwire to 0)
-    for (int i = 0; i < CVA6Cfg.NrPMPEntries; i++) pmpcfg_d[i].reserved = 2'b0;
+    for (int i = 0; i < NrPMPEntries; i++) pmpcfg_d[i].reserved = 2'b0;
 
     // write the floating point status register
     if (CVA6Cfg.FpPresent && csr_write_fflags_i) begin
@@ -2843,7 +2844,7 @@ module csr_regfile
       wfi_q                  <= 1'b0;
       // pmp
       for (int i = 0; i < 64; i++) begin
-        if (i < CVA6Cfg.NrPMPEntries) begin
+        if (i < NrPMPEntries) begin
           pmpcfg_q[i]  <= riscv::pmpcfg_t'(CVA6Cfg.PMPCfgRstVal[i]);
           pmpaddr_q[i] <= CVA6Cfg.PMPAddrRstVal[i][CVA6Cfg.PLEN-3:0];
         end else begin
@@ -2951,7 +2952,7 @@ module csr_regfile
   // write logic pmp
   always_comb begin : write
     for (int i = 0; i < 64; i++) begin
-      if (i < CVA6Cfg.NrPMPEntries) begin
+      if (i < NrPMPEntries) begin
         if (!CVA6Cfg.PMPEntryReadOnly[i]) begin
           // PMP locked logic is handled in the CSR write process above
           pmpcfg_next[i] = pmpcfg_d[i];

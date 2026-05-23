@@ -24,6 +24,7 @@ module cva6_ptw
   import ariane_pkg::*;
 #(
     parameter config_pkg::cva6_cfg_t CVA6Cfg = config_pkg::cva6_cfg_empty,
+    parameter int unsigned NrPMPEntries = CVA6Cfg.NrPMPEntries,
     parameter type pte_cva6_t = logic,
     parameter type tlb_update_cva6_t = logic,
     parameter type dcache_req_i_t = logic,
@@ -84,8 +85,8 @@ module cva6_ptw
     output logic shared_tlb_miss_o,
 
     // PMP
-    input riscv::pmpcfg_t [avoid_neg(CVA6Cfg.NrPMPEntries-1):0] pmpcfg_i,
-    input logic [avoid_neg(CVA6Cfg.NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i,
+    input riscv::pmpcfg_t [avoid_neg(NrPMPEntries-1):0] pmpcfg_i,
+    input logic [avoid_neg(NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i,
     output logic [CVA6Cfg.PLEN-1:0] bad_paddr_o,
     output logic [CVA6Cfg.GPLEN-1:0] bad_gpaddr_o
 );

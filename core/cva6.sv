@@ -593,8 +593,9 @@ module cva6
   logic acc_cons_en_csr;
   logic debug_mode;
   logic single_step_csr_commit;
-  riscv::pmpcfg_t [avoid_neg(CVA6Cfg.NrPMPEntries-1):0] pmpcfg;
-  logic [avoid_neg(CVA6Cfg.NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr;
+  localparam int unsigned NrPMPEntries = CVA6Cfg.NrPMPEntries;
+  riscv::pmpcfg_t [avoid_neg(NrPMPEntries-1):0] pmpcfg;
+  logic [avoid_neg(NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr;
   logic [31:0] mcountinhibit_csr_perf;
   //jvt
   jvt_t jvt;

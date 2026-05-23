@@ -17,6 +17,7 @@ module load_store_unit
   import ariane_pkg::*;
 #(
     parameter config_pkg::cva6_cfg_t CVA6Cfg = config_pkg::cva6_cfg_empty,
+    parameter int unsigned NrPMPEntries = CVA6Cfg.NrPMPEntries,
     parameter type dcache_req_i_t = logic,
     parameter type dcache_req_o_t = logic,
     parameter type exception_t = logic,
@@ -161,9 +162,9 @@ module load_store_unit
     input  amo_resp_t           amo_resp_i,
 
     // PMP configuration - CSR_REGFILE
-    input riscv::pmpcfg_t [avoid_neg(CVA6Cfg.NrPMPEntries-1):0]                   pmpcfg_i,
+    input riscv::pmpcfg_t [avoid_neg(NrPMPEntries-1):0]                   pmpcfg_i,
     // PMP address - CSR_REGFILE
-    input logic           [avoid_neg(CVA6Cfg.NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i,
+    input logic           [avoid_neg(NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i,
 
     // RVFI information - RVFI
     output lsu_ctrl_t                    rvfi_lsu_ctrl_o,

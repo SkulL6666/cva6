@@ -18,6 +18,7 @@ module acc_dispatcher
   import riscv::*;
 #(
     parameter config_pkg::cva6_cfg_t CVA6Cfg = config_pkg::cva6_cfg_empty,
+    parameter int unsigned NrPMPEntries = CVA6Cfg.NrPMPEntries,
     parameter type dcache_req_i_t = logic,
     parameter type dcache_req_o_t = logic,
     parameter type exception_t = logic,
@@ -41,8 +42,8 @@ module acc_dispatcher
     // Interface with the CSRs
     input priv_lvl_t ld_st_priv_lvl_i,
     input logic sum_i,
-    input pmpcfg_t [avoid_neg(CVA6Cfg.NrPMPEntries-1):0] pmpcfg_i,
-    input logic [avoid_neg(CVA6Cfg.NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i,
+    input pmpcfg_t [avoid_neg(NrPMPEntries-1):0] pmpcfg_i,
+    input logic [avoid_neg(NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i,
     input logic [2:0] fcsr_frm_i,
     output logic dirty_v_state_o,
     input logic acc_mmu_en_i,

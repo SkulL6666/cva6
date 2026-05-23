@@ -26,6 +26,7 @@ module cva6_mmu
   import ariane_pkg::*;
 #(
     parameter config_pkg::cva6_cfg_t CVA6Cfg        = config_pkg::cva6_cfg_empty,
+    parameter int unsigned           NrPMPEntries   = CVA6Cfg.NrPMPEntries,
     parameter type                   icache_areq_t  = logic,
     parameter type                   icache_arsp_t  = logic,
     parameter type                   icache_dreq_t  = logic,
@@ -101,8 +102,8 @@ module cva6_mmu
 
     // PMP
 
-    input riscv::pmpcfg_t [avoid_neg(CVA6Cfg.NrPMPEntries-1):0]                   pmpcfg_i,
-    input logic           [avoid_neg(CVA6Cfg.NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i
+    input riscv::pmpcfg_t [avoid_neg(NrPMPEntries-1):0]                   pmpcfg_i,
+    input logic           [avoid_neg(NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i
 );
 
   // memory management, pte for cva6

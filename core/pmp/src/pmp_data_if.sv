@@ -10,6 +10,7 @@ module pmp_data_if
   import ariane_pkg::*;
 #(
     parameter config_pkg::cva6_cfg_t CVA6Cfg       = config_pkg::cva6_cfg_empty,
+    parameter int unsigned           NrPMPEntries  = CVA6Cfg.NrPMPEntries,
     parameter type                   icache_areq_t = logic,
     parameter type                   exception_t   = logic
 ) (
@@ -36,8 +37,8 @@ module pmp_data_if
     input riscv::priv_lvl_t ld_st_priv_lvl_i,
     input logic ld_st_v_i,
     // PMP
-    input riscv::pmpcfg_t [avoid_neg(CVA6Cfg.NrPMPEntries-1):0] pmpcfg_i,
-    input logic [avoid_neg(CVA6Cfg.NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i
+    input riscv::pmpcfg_t [avoid_neg(NrPMPEntries-1):0] pmpcfg_i,
+    input logic [avoid_neg(NrPMPEntries-1):0][CVA6Cfg.PLEN-3:0] pmpaddr_i
 );
   // virtual address causing the exception
   logic [CVA6Cfg.XLEN-1:0] fetch_vaddr_xlen, lsu_vaddr_xlen;
@@ -170,7 +171,7 @@ module pmp_data_if
     end else begin
       if (ld_st_priv_lvl_i == riscv::PRIV_LVL_M) begin
         no_locked_data <= 1'b1;
-        for (int i = 0; i < CVA6Cfg.NrPMPEntries; i++) begin
+        for (int i = 0; i < NrPMPEntries; i++) begin
           if (pmpcfg_i[i].locked && pmpcfg_i[i].addr_mode != riscv::OFF) begin
             no_locked_data <= no_locked_data & 1'b0;
           end else no_locked_data <= no_locked_data & 1'b1;
@@ -186,7 +187,7 @@ module pmp_data_if
     end else begin
       if (priv_lvl_i == riscv::PRIV_LVL_M) begin
         no_locked_if <= 1'b1;
-        for (int i = 0; i < CVA6Cfg.NrPMPEntries; i++) begin
+        for (int i = 0; i < NrPMPEntries; i++) begin
           if (pmpcfg_i[i].locked && pmpcfg_i[i].addr_mode != riscv::OFF) begin
             no_locked_if <= no_locked_if & 1'b0;
           end else no_locked_if <= no_locked_if & 1'b1;
